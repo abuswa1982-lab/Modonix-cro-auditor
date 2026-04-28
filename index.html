@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRO Auditor — Modonix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --lime: #C8FF1F;
+  --lime-deep: #A8E000;
+  --lime-tint: #FAFFE6;
+  --black: #0A0A0A;
+  --ink: #1A1A1A;
+  --steel-900: #2A2A2A;
+  --steel-700: #4A4A4A;
+  --steel-500: #767676;
+  --steel-300: #B5B5B5;
+  --steel-100: #E3E6E6;
+  --soft: #F7F8F8;
+  --paper: #FFFFFF;
+  --green: #007600;
+  --green-bg: #ECF7E8;
+  --amber: #C45500;
+  --amber-bg: #FEF3DD;
+  --red: #B12704;
+  --red-bg: #FEE7E2;
+  --blue: #1E40AF;
+  --blue-bg: #E8F4FD;
+  --body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--body);
+  background: var(--soft);
+  color: var(--ink);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* === Header === */
+header {
+  background: var(--black);
+  color: var(--paper);
+  padding: 18px 0;
+  border-bottom: 3px solid var(--lime);
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-logo {
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--paper);
+}
+.brand-logo::before {
+  content: '';
+  width: 11px;
+  height: 11px;
+  background: var(--lime);
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+.brand-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--steel-300);
+  padding-left: 12px;
+  border-left: 1px solid var(--steel-700);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.settings-btn {
+  background: transparent;
+  border: 1px solid var(--steel-700);
+  color: var(--steel-300);
+  padding: 7px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--body);
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.settings-btn:hover { border-color: var(--lime); color: var(--lime); }
+
+/* === Container === */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* === Hero === */
+.hero {
+  background: var(--paper);
+  border: 1px solid var(--steel-100);
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--lime);
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--steel-500);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+.hero h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+  color: var(--black);
+  margin-bottom: 10px;
+}
+.hero p {
+  font-size: 15px;
+  color: var(--steel-700);
+  max-width: 680px;
+  line-height: 1.6;
+}
+
+/* === Input section === */
+.input-section {
+  background: var(--paper);
+  border: 1px solid var(--steel-100);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.input-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--steel-100);
+  margin-bottom: 20px;
+}
+.input-tab {
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--steel-500);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+}
+.input-tab:hover { color: var(--ink); }
+.input-tab.active { color: var(--ink); border-bottom-color: var(--lime); }
+.input-tab svg { width: 16px; height: 16px; }
+
+.input-pane { display: none; }
+.input-pane.active { display: block; }
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--steel-700);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.text-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--steel-100);
+  border-radius: 5px;
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  background: var(--paper);
+  transition: border-color 0.15s;
+}
+.text-input:focus { border-color: var(--lime-deep); }
+
+.textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 12px;
+  border: 1.5px solid var(--steel-100);
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  outline: none;
+  background: var(--paper);
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+.textarea:focus { border-color: var(--lime-deep); }
+
+.helper {
+  font-size: 12px;
+  color: var(--steel-500);
+  margin-top: 4px;
+}
+
+/* Drop zone for screenshot */
+.dropzone {
+  border: 2px dashed var(--steel-100);
+  border-radius: 8px;
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--soft);
+}
+.dropzone:hover { border-color: var(--lime-deep); background: var(--lime-tint); }
+.dropzone.has-file { border-color: var(--lime-deep); background: var(--lime-tint); border-style: solid; }
+.dropzone.dragging { border-color: var(--lime-deep); background: var(--lime-tint); transform: scale(1.01); }
+.dropzone svg {
+  width: 40px;
+  height: 40px;
+  color: var(--steel-500);
+  margin: 0 auto 10px;
+  display: block;
+}
+.dropzone-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.dropzone-subtitle {
+  font-size: 12px;
+  color: var(--steel-500);
+}
+.preview-img {
+  max-width: 100%;
+  max-height: 320px;
+  border-radius: 6px;
+  border: 1px solid var(--steel-100);
+  margin-top: 12px;
+}
+.preview-info {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--steel-700);
+  font-family: var(--mono);
+}
+
+/* Context fields */
+.context-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+.field { display: flex; flex-direction: column; }
+
+/* Competitors block */
+.competitors-block {
+  margin-top: 16px;
+  border: 1px solid var(--steel-100);
+  border-radius: 6px;
+  background: var(--soft);
+  overflow: hidden;
+}
+.competitors-header {
+  padding: 12px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: background 0.15s;
+}
+.competitors-header:hover { background: #EFEFEC; }
+.comp-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#comp-chevron {
+  width: 14px;
+  height: 14px;
+  color: var(--steel-700);
+  transition: transform 0.2s;
+}
+.competitors-block.open #comp-chevron { transform: rotate(180deg); }
+.comp-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.comp-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--steel-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.comp-count {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green);
+  background: var(--green-bg);
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+.comp-count:empty { display: none; }
+.competitors-body {
+  padding: 14px;
+  border-top: 1px solid var(--steel-100);
+  background: var(--paper);
+}
+.comp-help {
+  font-size: 12px;
+  color: var(--steel-700);
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.comp-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.comp-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.comp-label-num {
+  width: 24px;
+  height: 24px;
+  background: var(--black);
+  color: var(--lime);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.comp-url {
+  flex: 1;
+}
+
+/* Run button */
+.run-btn-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--steel-100);
+}
+.run-btn {
+  background: var(--black);
+  color: var(--lime);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: var(--body);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.15s;
+}
+.run-btn:hover:not(:disabled) { background: var(--ink); transform: translateY(-1px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+.run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.run-btn svg { width: 16px; height: 16px; }
+
+.run-cost {
+  font-size: 11px;
+  color: var(--steel-500);
+  font-family: var(--mono);
+}
+
+/* Status */
+.status-bar {
+  background: var(--paper);
+  border: 1px solid var(--steel-100);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+.status-bar.active { display: flex; }
+.status-bar.error { border-left: 3px solid var(--red); background: var(--red-bg); }
+.status-bar.loading { border-left: 3px solid var(--amber); }
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--steel-100);
+  border-top-color: var(--amber);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.status-text { font-size: 13px; font-weight: 600; color: var(--ink); }
+.status-text.error-text { color: var(--red); }
+
+/* === Results === */
+.results { display: none; }
+.results.active { display: block; }
+
+.result-card {
+  background: var(--paper);
+  border: 1px solid var(--steel-100);
+  border-radius: 8px;
+  padding: 28px;
+  margin-bottom: 16px;
+}
+
+.summary-card {
+  background: var(--black);
+  color: var(--paper);
+  border: none;
+}
+.summary-card .result-label { color: var(--lime); }
+.summary-card h2 { color: var(--paper); font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+.summary-card .summary-text { font-size: 14px; line-height: 1.65; color: var(--steel-300); }
+.summary-card .summary-text strong { color: var(--paper); font-weight: 700; }
+
+.competitive-card {
+  background: var(--lime-tint);
+  border: 1px solid var(--lime-deep);
+  border-left: 4px solid var(--lime-deep);
+}
+.competitive-card .result-label { color: var(--green); }
+.comp-summary-text {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.comp-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--green-bg);
+  color: var(--green);
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* Approve-fixes UI */
+.visual-card { }
+.visual-help {
+  font-size: 13px;
+  color: var(--steel-700);
+  margin-bottom: 16px;
+  line-height: 1.55;
+}
+
+.approve-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+.approve-counts {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.approve-num {
+  font-family: var(--body);
+  font-weight: 800;
+  font-size: 24px;
+  color: var(--lime);
+  letter-spacing: -0.5px;
+}
+.approve-total {
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--steel-300);
+}
+.approve-label {
+  font-size: 12px;
+  color: var(--steel-300);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.approve-actions {
+  display: flex;
+  gap: 6px;
+}
+.action-btn-mini {
+  background: transparent;
+  border: 1px solid var(--steel-700);
+  color: var(--steel-300);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  transition: all 0.12s;
+}
+.action-btn-mini:hover { border-color: var(--lime); color: var(--lime); }
+
+.approve-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.approve-region-block {
+  border: 1px solid var(--steel-100);
+  border-left: 3px solid var(--steel-700);
+  border-radius: 0 6px 6px 0;
+  background: var(--paper);
+  overflow: hidden;
+}
+.approve-region-block.has-p1 { border-left-color: var(--red); }
+.approve-region-block.has-p2 { border-left-color: var(--amber); }
+.approve-region-block.has-p3 { border-left-color: var(--blue); }
+.approve-region-header {
+  padding: 10px 16px;
+  background: var(--soft);
+  border-bottom: 1px solid var(--steel-100);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.approve-region-name {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.approve-region-count {
+  font-size: 11px;
+  color: var(--steel-500);
+  font-weight: 600;
+}
+.approve-region-count strong { color: var(--green); }
+
+.approve-rec {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--steel-100);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.approve-rec:last-child { border-bottom: none; }
+.approve-rec:hover { background: var(--soft); }
+.approve-rec.unchecked { opacity: 0.55; }
+.approve-rec.unchecked:hover { opacity: 0.85; }
+
+.approve-checkbox {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--steel-300);
+  border-radius: 4px;
+  background: var(--paper);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s;
+  position: relative;
+}
+.approve-rec.checked .approve-checkbox {
+  background: var(--green);
+  border-color: var(--green);
+}
+.approve-rec.checked .approve-checkbox::after {
+  content: '';
+  width: 6px;
+  height: 10px;
+  border-right: 2.5px solid #FFFFFF;
+  border-bottom: 2.5px solid #FFFFFF;
+  transform: rotate(45deg);
+  margin-bottom: 2px;
+}
+
+.approve-rec-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 11px;
+  color: var(--paper);
+  margin-top: 0px;
+}
+.approve-rec-num.p1 { background: var(--red); }
+.approve-rec-num.p2 { background: var(--amber); }
+.approve-rec-num.p3 { background: var(--blue); }
+
+.approve-rec-body { flex: 1; min-width: 0; }
+.approve-rec-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.approve-rec-detail {
+  font-size: 12px;
+  color: var(--steel-700);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.approve-rec-meta {
+  font-size: 11px;
+  color: var(--steel-500);
+  font-family: var(--mono);
+}
+.approve-rec-meta strong { color: var(--ink); }
+
+.visual-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Structure mockup output */
+.structure-output {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--steel-100);
+}
+.structure-loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--steel-500);
+  font-size: 13px;
+}
+.structure-region {
+  background: var(--paper);
+  border: 1px solid var(--steel-100);
+  border-radius: 6px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.structure-region-header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.structure-region-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--lime);
+}
+.structure-region-count {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--steel-300);
+}
+.structure-region-body {
+  padding: 20px;
+  background: var(--soft);
+}
+.structure-mockup {
+  background: var(--paper);
+  border: 2px dashed var(--steel-300);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--steel-700);
+  line-height: 1.7;
+}
+.structure-mockup-block {
+  background: var(--soft);
+  border: 1px solid var(--steel-100);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-family: var(--body);
+}
+.structure-mockup-block.new {
+  background: var(--lime-tint);
+  border-color: var(--lime-deep);
+  border-left: 3px solid var(--lime-deep);
+}
+.structure-mockup-block.changed {
+  background: var(--amber-bg);
+  border-color: var(--amber);
+  border-left: 3px solid var(--amber);
+}
+.structure-mockup-block.removed {
+  background: var(--red-bg);
+  border-color: var(--red);
+  border-left: 3px solid var(--red);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+.structure-mockup-block .block-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 8px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.block-tag.new { background: var(--green); color: var(--paper); }
+.block-tag.changed { background: var(--amber); color: var(--paper); }
+.block-tag.removed { background: var(--red); color: var(--paper); }
+.block-tag.kept { background: var(--steel-300); color: var(--ink); }
+.structure-mockup-block .block-label {
+  font-weight: 700;
+  color: var(--ink);
+}
+.structure-mockup-block .block-detail {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--steel-700);
+  font-weight: 400;
+}
+.structure-changes {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--steel-100);
+}
+.structure-changes-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--steel-700);
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.structure-change-item {
+  display: flex;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 12px;
+  color: var(--steel-700);
+}
+.structure-change-item strong { color: var(--ink); }
+.structure-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: var(--soft);
+  border-radius: 5px;
+  font-size: 11px;
+  color: var(--steel-700);
+}
+.structure-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+.legend-dot.new { background: var(--green); }
+.legend-dot.changed { background: var(--amber); }
+.legend-dot.kept { background: var(--steel-300); }
+
+.result-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--steel-500);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+.result-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--black);
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+}
+
+/* Quick stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stat-cell {
+  background: var(--paper);
+  border: 1px solid var(--steel-100);
+  border-radius: 6px;
+  padding: 14px;
+}
+.stat-num {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-num.p1 { color: var(--red); }
+.stat-num.p2 { color: var(--amber); }
+.stat-num.p3 { color: var(--blue); }
+.stat-num.score { color: var(--green); }
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--steel-500);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Recommendation list */
+.rec-section { margin-bottom: 28px; }
+.rec-section:last-child { margin-bottom: 0; }
+.rec-section-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--black);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.priority-tag {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+.priority-tag.p1 { background: var(--red-bg); color: var(--red); }
+.priority-tag.p2 { background: var(--amber-bg); color: var(--amber); }
+.priority-tag.p3 { background: var(--blue-bg); color: var(--blue); }
+
+.rec-item {
+  border-left: 3px solid var(--steel-100);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: var(--soft);
+  border-radius: 0 6px 6px 0;
+  position: relative;
+}
+.rec-item.p1 { border-left-color: var(--red); }
+.rec-item.p2 { border-left-color: var(--amber); }
+.rec-item.p3 { border-left-color: var(--blue); }
+.rec-item.highlight {
+  background: var(--lime-tint);
+  box-shadow: 0 0 0 2px var(--lime);
+}
+.rec-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--paper);
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.rec-num.p1 { background: var(--red); }
+.rec-num.p2 { background: var(--amber); }
+.rec-num.p3 { background: var(--blue); }
+
+.rec-row1 {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.rec-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  flex: 1;
+}
+.rec-area {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--steel-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  padding-top: 2px;
+}
+.rec-detail {
+  font-size: 13px;
+  color: var(--steel-700);
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+.rec-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--steel-500);
+  font-family: var(--mono);
+}
+.rec-meta strong { color: var(--ink); font-weight: 700; }
+
+/* Action footer */
+.actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.action-btn {
+  background: var(--paper);
+  border: 1.5px solid var(--steel-100);
+  color: var(--ink);
+  padding: 10px 16px;
+  border-radius: 5px;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.action-btn:hover { border-color: var(--ink); }
+.action-btn svg { width: 14px; height: 14px; }
+.action-btn.primary { background: var(--black); color: var(--lime); border-color: var(--black); }
+.action-btn.primary:hover { background: var(--ink); }
+
+/* === Settings modal === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--paper);
+  border-radius: 10px;
+  max-width: 480px;
+  width: 100%;
+  padding: 28px;
+}
+.modal h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--black);
+  margin-bottom: 6px;
+}
+.modal p {
+  font-size: 13px;
+  color: var(--steel-500);
+  margin-bottom: 20px;
+  line-height: 1.55;
+}
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* Footer */
+footer.modonix-footer {
+  text-align: center;
+  padding: 32px 24px;
+  font-size: 11px;
+  color: var(--steel-500);
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+footer.modonix-footer strong { color: var(--ink); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero { padding: 24px; }
+  .hero h1 { font-size: 24px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .context-grid { grid-template-columns: 1fr; }
+  .input-tabs { overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-logo">MODONIX</span>
+      <span class="brand-tag">CRO Auditor v1</span>
+    </div>
+    <button class="settings-btn" onclick="openSettings()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">Conversion Rate Optimization Tool</div>
+    <h1>Audit any product page in 60 seconds.</h1>
+    <p>Paste a URL, paste page HTML, or upload a screenshot. Get a prioritized list of conversion fixes with the same framework Modonix uses for B2B and e-commerce client audits — quick wins, structural issues, and high-leverage additions ranked by expected impact and effort.</p>
+  </div>
+
+  <!-- Input -->
+  <div class="input-section">
+    <div class="input-tabs">
+      <button class="input-tab active" data-pane="url" onclick="switchPane('url')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Paste URL
+      </button>
+      <button class="input-tab" data-pane="html" onclick="switchPane('html')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Paste HTML
+      </button>
+      <button class="input-tab" data-pane="image" onclick="switchPane('image')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Upload Screenshot
+      </button>
+    </div>
+
+    <!-- URL pane -->
+    <div class="input-pane active" id="pane-url">
+      <label class="label">Product page URL</label>
+      <input type="url" class="text-input" id="url-input" placeholder="https://www.example.com/product-page">
+      <div class="helper">Paste any product page URL. The app fetches the page content through r.jina.ai (free, no key needed) and runs the audit on the actual page text.</div>
+    </div>
+
+    <!-- HTML pane -->
+    <div class="input-pane" id="pane-html">
+      <label class="label">Page HTML or visible text</label>
+      <textarea class="textarea" id="html-input" placeholder="Paste the full page HTML, or just the visible text content of the product page..."></textarea>
+      <div class="helper">Right-click the page → View Page Source → Select All → Copy. Or just copy the visible text from the page if HTML is too messy.</div>
+    </div>
+
+    <!-- Image pane -->
+    <div class="input-pane" id="pane-image">
+      <label class="label">Screenshot of product page</label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="image-input" accept="image/*" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="dropzone-title">Click to upload, or drag &amp; drop</div>
+        <div class="dropzone-subtitle">Full-page screenshot works best · PNG or JPEG · max 5MB</div>
+        <img id="preview" class="preview-img" style="display: none;">
+        <div id="preview-info" class="preview-info" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Context fields -->
+    <div class="context-grid">
+      <div class="field">
+        <label class="label">Product type / category (optional)</label>
+        <input type="text" class="text-input" id="ctx-category" placeholder="e.g., B2B safety apparel, DTC supplements, SaaS pricing page">
+      </div>
+      <div class="field">
+        <label class="label">Primary buyer (optional)</label>
+        <input type="text" class="text-input" id="ctx-buyer" placeholder="e.g., procurement manager, fitness enthusiast, dev team lead">
+      </div>
+    </div>
+
+    <!-- Competitors (optional) -->
+    <div class="competitors-block" id="comp-block">
+      <div class="competitors-header" onclick="toggleCompetitors()">
+        <div class="comp-toggle-left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="comp-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          <span class="comp-title">Compare against competitors</span>
+          <span class="comp-tag">Optional · Sharpens recommendations</span>
+        </div>
+        <span class="comp-count" id="comp-count"></span>
+      </div>
+      <div class="competitors-body" id="comp-body" style="display: none;">
+        <p class="comp-help">Paste up to 3 competitor URLs selling the same product (or a comparable one). The auditor will fetch them and use them to sharpen its recommendations — flagging where you're winning on price, where competitors have features you don't, and what to attack vs defend. Each competitor adds ~5 sec to the audit.</p>
+        <div class="comp-fields">
+          <div class="comp-field-row">
+            <span class="comp-label-num">1</span>
+            <input type="url" class="text-input comp-url" id="comp-url-1" placeholder="https://competitor.com/same-product">
+          </div>
+          <div class="comp-field-row">
+            <span class="comp-label-num">2</span>
+            <input type="url" class="text-input comp-url" id="comp-url-2" placeholder="https://another-competitor.com/...">
+          </div>
+          <div class="comp-field-row">
+            <span class="comp-label-num">3</span>
+            <input type="url" class="text-input comp-url" id="comp-url-3" placeholder="https://third-competitor.com/...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Run -->
+    <div class="run-btn-row">
+      <span class="run-cost">Powered by Claude Sonnet 4 · ~$0.05–$0.10 per audit</span>
+      <button class="run-btn" id="run-btn" onclick="runAudit()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Run Audit
+      </button>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div class="status-bar" id="status">
+    <div id="status-icon"></div>
+    <span class="status-text" id="status-text"></span>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+    <!-- Summary -->
+    <div class="result-card summary-card">
+      <div class="result-label">Executive Summary</div>
+      <h2 id="summary-headline"></h2>
+      <div class="summary-text" id="summary-text"></div>
+    </div>
+
+    <!-- Competitive Summary (only shown when competitors were provided) -->
+    <div class="result-card competitive-card" id="competitive-card" style="display: none;">
+      <div class="result-label">Competitive Read</div>
+      <div class="comp-summary-text" id="comp-summary-text"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="result-card">
+      <div class="result-label">Audit Snapshot</div>
+      <div class="stats-grid">
+        <div class="stat-cell">
+          <div class="stat-num score" id="stat-score">—</div>
+          <div class="stat-label">CRO Score</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num p1" id="stat-p1">0</div>
+          <div class="stat-label">P1 Critical</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num p2" id="stat-p2">0</div>
+          <div class="stat-label">P2 High</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num p3" id="stat-p3">0</div>
+          <div class="stat-label">P3 Medium</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="result-card">
+      <div class="result-label">Prioritized Recommendations</div>
+      <h3>Specific changes ranked by impact and effort</h3>
+      <div id="recs-container"></div>
+    </div>
+
+    <!-- Approve fixes (only when screenshot was used) -->
+    <div class="result-card visual-card" id="visual-card" style="display: none;">
+      <div class="result-label">Approve Fixes</div>
+      <h3>Pick what you want — see the structure</h3>
+      <p class="visual-help">Every recommendation starts checked. Uncheck the ones you don't want — you know your business better than any audit. Click "Show Me How It Should Look" to see a structural breakdown of the redesigned sections, then "Copy Spec for Lovable / v0" to grab a clean spec you can paste into a design tool along with your screenshot to get a polished visual mockup.</p>
+
+      <div class="approve-bar">
+        <div class="approve-counts">
+          <span class="approve-num" id="approved-count">0</span>
+          <span class="approve-label">of</span>
+          <span class="approve-total" id="total-count">0</span>
+          <span class="approve-label">fixes selected</span>
+        </div>
+        <div class="approve-actions">
+          <button class="action-btn-mini" onclick="checkAll(true)">Select All</button>
+          <button class="action-btn-mini" onclick="checkAll(false)">Clear All</button>
+        </div>
+      </div>
+
+      <div id="approve-list" class="approve-list"></div>
+
+      <div class="visual-actions">
+        <button class="action-btn primary" onclick="showStructure()" id="show-structure-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          Show Me How It Should Look
+        </button>
+        <button class="action-btn" onclick="copyForLovable()" id="copy-lovable-btn" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Spec for Lovable / v0
+        </button>
+      </div>
+
+      <div id="structure-output" class="structure-output" style="display: none;"></div>
+    </div>
+
+    <!-- Action footer -->
+    <div class="actions-row">
+      <button class="action-btn primary" onclick="copyResults()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy as Text
+      </button>
+      <button class="action-btn" onclick="downloadJSON()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download JSON
+      </button>
+      <button class="action-btn" onclick="resetAndStartOver()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
+        Run Another
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<footer class="modonix-footer">
+  <strong>MODONIX</strong> &nbsp;·&nbsp; Digital Commerce Consulting &nbsp;·&nbsp; modonix.com
+</footer>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <h3>API Key</h3>
+    <p>Anthropic API key, stored in your browser only. Never sent to Modonix or anywhere else. Get one at console.anthropic.com.</p>
+    <input type="password" class="text-input" id="api-key-input" placeholder="sk-ant-...">
+    <div class="modal-actions">
+      <button class="action-btn" onclick="closeSettings()">Cancel</button>
+      <button class="action-btn primary" onclick="saveApiKey()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================================
+// State
+// ========================================
+let imageData = null;
+let imageType = null;
+let imageName = null;
+let imageDataUrl = null;
+let lastResults = null;
+
+// ========================================
+// Competitor block toggle + counter
+// ========================================
+function toggleCompetitors() {
+  const block = document.getElementById('comp-block');
+  const body = document.getElementById('comp-body');
+  block.classList.toggle('open');
+  body.style.display = block.classList.contains('open') ? 'block' : 'none';
+}
+
+function updateCompetitorCount() {
+  const urls = getCompetitorUrls();
+  const el = document.getElementById('comp-count');
+  el.textContent = urls.length > 0 ? `${urls.length} added` : '';
+}
+
+function getCompetitorUrls() {
+  return [1, 2, 3]
+    .map(i => document.getElementById(`comp-url-${i}`).value.trim())
+    .filter(u => u.match(/^https?:\/\//i));
+}
+
+document.querySelectorAll('.comp-url').forEach(el => {
+  el.addEventListener('input', updateCompetitorCount);
+});
+
+// ========================================
+// Shared fetcher with fallbacks
+// ========================================
+async function fetchPageContent(url, statusFn) {
+  const fetchers = [
+    {
+      name: 'r.jina.ai',
+      fn: async () => {
+        const resp = await fetch('https://r.jina.ai/' + url, {
+          headers: { 'X-Return-Format': 'markdown' }
+        });
+        if (!resp.ok) throw new Error(`Jina returned ${resp.status}`);
+        return await resp.text();
+      }
+    },
+    {
+      name: 'AllOrigins',
+      fn: async () => {
+        const resp = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url));
+        if (!resp.ok) throw new Error(`AllOrigins returned ${resp.status}`);
+        const html = await resp.text();
+        return stripHtml(html);
+      }
+    },
+    {
+      name: 'corsproxy.io',
+      fn: async () => {
+        const resp = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+        if (!resp.ok) throw new Error(`corsproxy returned ${resp.status}`);
+        const html = await resp.text();
+        return stripHtml(html);
+      }
+    }
+  ];
+
+  let lastError = null;
+  for (const f of fetchers) {
+    try {
+      if (statusFn) statusFn(`Fetching via ${f.name}...`);
+      const content = await f.fn();
+      if (content && content.length > 200) {
+        return { content, method: f.name };
+      }
+      lastError = new Error(`${f.name} returned empty content`);
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw new Error(lastError?.message || 'All fetchers failed');
+}
+
+function stripHtml(html) {
+  // Build regex patterns dynamically so the HTML parser cant see literal script/style closing tags in our code
+  const scriptRe = new RegExp('<' + 'script\\b[^>]*>[\\s\\S]*?<\\/' + 'script>', 'gi');
+  const styleRe = new RegExp('<' + 'style\\b[^>]*>[\\s\\S]*?<\\/' + 'style>', 'gi');
+  return html
+    .replace(scriptRe, '')
+    .replace(styleRe, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
+// ========================================
+// API key management
+// ========================================
+function getApiKey() { return localStorage.getItem('modonix_anthropic_key') || ''; }
+function setApiKey(k) { localStorage.setItem('modonix_anthropic_key', k); }
+
+function openSettings() {
+  document.getElementById('api-key-input').value = getApiKey();
+  document.getElementById('settings-modal').classList.add('active');
+}
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('active');
+}
+function saveApiKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  setApiKey(k);
+  closeSettings();
+  updateRunButton();
+}
+
+// ========================================
+// Tab switching
+// ========================================
+function switchPane(name) {
+  document.querySelectorAll('.input-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.input-pane').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.input-tab[data-pane="${name}"]`).classList.add('active');
+  document.getElementById(`pane-${name}`).classList.add('active');
+  updateRunButton();
+}
+
+// ========================================
+// Image upload + dropzone
+// ========================================
+const dropzone = document.getElementById('dropzone');
+const imageInput = document.getElementById('image-input');
+
+dropzone.addEventListener('click', () => imageInput.click());
+imageInput.addEventListener('change', (e) => {
+  if (e.target.files[0]) handleImage(e.target.files[0]);
+});
+['dragenter', 'dragover'].forEach(evt => {
+  dropzone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragging');
+  });
+});
+['dragleave', 'drop'].forEach(evt => {
+  dropzone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragging');
+  });
+});
+dropzone.addEventListener('drop', (e) => {
+  if (e.dataTransfer.files[0]) handleImage(e.dataTransfer.files[0]);
+});
+
+function handleImage(file) {
+  if (!file.type.startsWith('image/')) {
+    showStatus('Please upload an image file.', 'error');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showStatus('Image must be under 5MB.', 'error');
+    return;
+  }
+  imageType = file.type;
+  imageName = file.name;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    imageData = e.target.result.split(',')[1];
+    imageDataUrl = e.target.result;
+    document.getElementById('preview').src = e.target.result;
+    document.getElementById('preview').style.display = 'block';
+    document.getElementById('preview-info').textContent = `${file.name} · ${(file.size / 1024).toFixed(0)}KB`;
+    document.getElementById('preview-info').style.display = 'block';
+    dropzone.classList.add('has-file');
+    document.querySelector('#dropzone svg').style.display = 'none';
+    document.querySelector('#dropzone .dropzone-title').style.display = 'none';
+    document.querySelector('#dropzone .dropzone-subtitle').style.display = 'none';
+    updateRunButton();
+  };
+  reader.readAsDataURL(file);
+}
+
+// ========================================
+// Input change listeners
+// ========================================
+document.getElementById('url-input').addEventListener('input', updateRunButton);
+document.getElementById('html-input').addEventListener('input', updateRunButton);
+
+function updateRunButton() {
+  const activeTab = document.querySelector('.input-tab.active').dataset.pane;
+  const hasKey = getApiKey().length > 10;
+  let hasInput = false;
+  if (activeTab === 'url') hasInput = document.getElementById('url-input').value.trim().length > 5;
+  else if (activeTab === 'html') hasInput = document.getElementById('html-input').value.trim().length > 50;
+  else if (activeTab === 'image') hasInput = imageData !== null;
+  document.getElementById('run-btn').disabled = !(hasKey && hasInput);
+}
+
+// ========================================
+// Status display
+// ========================================
+function showStatus(text, type = 'loading') {
+  const bar = document.getElementById('status');
+  const iconEl = document.getElementById('status-icon');
+  const textEl = document.getElementById('status-text');
+  bar.classList.add('active');
+  bar.classList.remove('loading', 'error');
+  textEl.classList.remove('error-text');
+  textEl.textContent = text;
+  if (type === 'loading') {
+    bar.classList.add('loading');
+    iconEl.innerHTML = '<div class="spinner"></div>';
+  } else if (type === 'error') {
+    bar.classList.add('error');
+    textEl.classList.add('error-text');
+    iconEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B12704" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+  }
+}
+function hideStatus() { document.getElementById('status').classList.remove('active'); }
+
+// ========================================
+// SYSTEM PROMPT — the CRO framework
+// ========================================
+const SYSTEM_PROMPT = `You are a senior conversion rate optimization (CRO) consultant working for Modonix, a digital commerce consulting firm specializing in B2B and e-commerce. You audit product pages and provide ruthless, ranked recommendations.
+
+Your audit framework, refined from real client work:
+
+QUICK WINS (P1 Critical) — typos, missing trust signals (e.g., authorized distributor badges, certifications), confidence-killing disclaimers, weak ship-by language with vague ranges, missing per-variant stock indicators, missing MSRP/price-anchor comparisons, missing or buried social proof.
+
+STRUCTURAL ISSUES (P2 High) — buy-box organization problems, weak or missing competitive price positioning, B2B buyer needs (bulk pricing, custom branding, Net 30, PO handling, spec docs) not surfaced, no urgency mechanics, related products that compete with the current SKU instead of complementing it, missing comparison tables.
+
+HIGH-LEVERAGE ADDITIONS (P2 or P3) — bulk-pricing tier tables, custom logo/branding service blocks, compare-similar-product tables, reviews and Q&A, faceted attribute links for SEO and navigation, downloadable spec sheets / compliance docs.
+
+For B2B / industrial / safety / supply pages specifically:
+- Procurement buyers scan feature bullets feature-first ("180g insulation, ANSI Class 3"), not benefit-first ("Stay warm in the cold")
+- Compliance documents and certifications must be downloadable, not buried
+- Authorized Distributor status is a real trust signal worth highlighting
+- Net 30 / PO / bulk quote paths are often the highest-revenue actions on the page
+- Custom logo printing is the single biggest revenue lever on apparel pages
+
+For DTC / consumer pages:
+- Reviews and UGC carry more weight than B2B
+- Subscription / repeat-purchase mechanics need surfacing
+- Free shipping thresholds and return policies need to be obvious
+- Mobile-first formatting matters more
+
+COMPETITOR ANALYSIS (when competitor pages are included):
+When the user provides competitor pages, you must use them to make recommendations sharper and more competitive. Specifically:
+- Compare prices directly. If the audited page is significantly cheaper than competitors, this is a P1 recommendation to surface visibly ("Save $X vs other distributors"). If significantly more expensive, flag the need to justify the premium.
+- Identify features competitors have that the audited page is missing. Each meaningful gap becomes a recommendation, prioritized by likely conversion impact.
+- Identify features the audited page has that competitors don't — these are differentiation opportunities currently being under-leveraged.
+- For each major recommendation that comes from competitor analysis, name the specific competitor in the detail (e.g., "Competitor 1 (FullSource) offers an inline logo quote form; the audited page only has a 'Call us' link").
+- Add a separate "competitive_summary" field to the JSON response when competitors are provided. This field should be 2-3 sentences identifying where the audited page is winning, where it's losing, and the highest-leverage competitive move.
+
+Always assess: What's the page's biggest single opportunity, expressed in plain language? What are the 5–10 specific changes ranked by impact and effort? Which areas of the page (gallery, buy box, attributes sidebar, below-fold) need work?
+
+You return responses ONLY in this exact JSON format with no other text, no preamble, no markdown code fences. Just raw JSON:
+
+{
+  "score": <number 0-100, current CRO health of the page>,
+  "headline": "<one-sentence assessment, blunt and specific>",
+  "summary": "<2-3 sentences identifying the page's biggest opportunity in plain language. Be direct about what's leaving money on the table. Use the user's context if provided.>",
+  "competitive_summary": "<ONLY include this field if competitor pages were provided. 2-3 sentences: where the audited page is winning vs competitors, where it's losing, and the highest-leverage competitive move.>",
+  "recommendations": [
+    {
+      "priority": "P1" | "P2" | "P3",
+      "area": "Gallery" | "Buy Box" | "Attributes" | "Below Fold" | "Header" | "Trust" | "Mobile" | "Other",
+      "title": "<short imperative — the change to make>",
+      "detail": "<2-3 sentences explaining what to change, what to replace it with, and why. If this recommendation comes from competitor analysis, name the specific competitor.>",
+      "why_it_matters": "<one sentence on the conversion impact>",
+      "effort": "<estimated dev time, e.g., '10 min', '1-2 hrs', '1 day'>",
+      "competitive_source": <true if this recommendation came from competitor analysis, otherwise omit>,
+      "region": "Header" | "Hero" | "Buy Box" | "Right Sidebar" | "Below Fold" | "Footer"
+    }
+  ]
+}
+
+Return between 5 and 12 recommendations. Order them P1 → P2 → P3, and within each priority by impact descending. Be specific — name the exact element on the page. Avoid generic advice. If you cannot see the page clearly or the input is insufficient, set score to null and put the explanation in the summary field with an empty recommendations array.
+
+VISUAL REGIONS (when a screenshot is provided):
+When the user provides a screenshot, assign each recommendation to a "region" — one of these fixed values that describes where on the page the change goes:
+- "Header" — top nav, search bar, account/cart icons
+- "Hero" — main product image, gallery, breadcrumb area
+- "Buy Box" — title, price, size selector, Add to Cart, ship info
+- "Right Sidebar" — attributes block, feature list, tags (only if the page has a 3-column layout)
+- "Below Fold" — anything below the main fold: description, specs, reviews, Q&A, related products, bulk pricing sections
+- "Footer" — site footer, trust signals, links
+
+Pick the single most accurate region for each recommendation. Don't guess at pixel coordinates. The region is what matters for hand-off — dev teams understand "Buy Box" perfectly well.`;
+
+// ========================================
+// Audit runner
+// ========================================
+async function runAudit() {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showStatus('Add your API key in Settings first.', 'error');
+    openSettings();
+    return;
+  }
+
+  const activeTab = document.querySelector('.input-tab.active').dataset.pane;
+  const category = document.getElementById('ctx-category').value.trim();
+  const buyer = document.getElementById('ctx-buyer').value.trim();
+
+  let userContent;
+  let contextNote = '';
+  if (category) contextNote += `\nProduct category: ${category}`;
+  if (buyer) contextNote += `\nPrimary buyer: ${buyer}`;
+
+  if (activeTab === 'url') {
+    const url = document.getElementById('url-input').value.trim();
+    if (!url.match(/^https?:\/\//i)) {
+      showStatus('URL must start with http:// or https://', 'error');
+      document.getElementById('run-btn').disabled = false;
+      return;
+    }
+
+    showStatus('Fetching page content...', 'loading');
+    document.getElementById('run-btn').disabled = true;
+
+    let pageContent, fetchMethod;
+    try {
+      const result = await fetchPageContent(url, (msg) => showStatus(msg, 'loading'));
+      pageContent = result.content;
+      fetchMethod = result.method;
+    } catch (e) {
+      showStatus(`Could not fetch page. Tried 3 services, all failed. Try the Screenshot tab instead. (Last error: ${e.message})`, 'error');
+      updateRunButton();
+      return;
+    }
+
+    userContent = [{
+      type: 'text',
+      text: `Audit the product page at this URL.${contextNote}
+
+URL: ${url}
+
+Page content (fetched via ${fetchMethod}):
+${pageContent.substring(0, 80000)}
+
+Return JSON only.`
+    }];
+  } else if (activeTab === 'html') {
+    const html = document.getElementById('html-input').value.trim();
+    userContent = [{
+      type: 'text',
+      text: `Audit this product page based on its HTML/text content.${contextNote}
+
+Page content:
+${html.substring(0, 50000)}
+
+Return JSON only.`
+    }];
+  } else {
+    userContent = [
+      {
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: imageType,
+          data: imageData
+        }
+      },
+      {
+        type: 'text',
+        text: `Audit this product page screenshot.${contextNote}
+
+Return JSON only.`
+      }
+    ];
+  }
+
+  // Fetch competitor pages if any are provided
+  const competitorUrls = getCompetitorUrls();
+  const competitorPages = [];
+  if (competitorUrls.length > 0) {
+    for (let i = 0; i < competitorUrls.length; i++) {
+      const cUrl = competitorUrls[i];
+      showStatus(`Fetching competitor ${i + 1} of ${competitorUrls.length}...`, 'loading');
+      try {
+        const result = await fetchPageContent(cUrl);
+        competitorPages.push({
+          url: cUrl,
+          content: result.content,
+          method: result.method
+        });
+      } catch (e) {
+        // Skip failed competitors silently — audit can still run with whatever we got
+        competitorPages.push({
+          url: cUrl,
+          content: null,
+          error: e.message
+        });
+      }
+    }
+
+    // Inject competitor data into the user content
+    let competitorBlock = '\n\n=== COMPETITOR PAGES FOR COMPARISON ===\n';
+    competitorBlock += 'Use these to sharpen recommendations: identify where the audited page wins or loses vs these competitors, what features competitors have that the audited page is missing, and what differentiation opportunities exist. Flag competitive gaps as P1/P2 recommendations when they materially affect conversion.\n\n';
+
+    competitorPages.forEach((cp, i) => {
+      competitorBlock += `--- COMPETITOR ${i + 1}: ${cp.url} ---\n`;
+      if (cp.content) {
+        // Truncate each competitor to ~20K chars to leave room for the main page
+        competitorBlock += cp.content.substring(0, 20000) + '\n\n';
+      } else {
+        competitorBlock += `[Could not fetch — ${cp.error}]\n\n`;
+      }
+    });
+
+    // Append competitor block to the first text element of userContent
+    const textBlock = userContent.find(c => c.type === 'text');
+    if (textBlock) {
+      textBlock.text += competitorBlock;
+    }
+  }
+
+  showStatus('Running audit — this takes 15-30 seconds...', 'loading');
+  document.getElementById('results').classList.remove('active');
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userContent }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const text = data.content.map(c => c.text || '').join('').trim();
+
+    // Strip code fences if Claude added them
+    let cleaned = text.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
+
+    let result;
+    try {
+      result = JSON.parse(cleaned);
+    } catch (e) {
+      throw new Error('Could not parse audit response. Try again or use a different input format.');
+    }
+
+    lastResults = result;
+    renderResults(result);
+    hideStatus();
+  } catch (error) {
+    showStatus(`Audit failed: ${error.message}`, 'error');
+  } finally {
+    updateRunButton();
+  }
+}
+
+// ========================================
+// Render results
+// ========================================
+function renderResults(result) {
+  document.getElementById('summary-headline').textContent = result.headline || '—';
+  document.getElementById('summary-text').textContent = result.summary || '—';
+  document.getElementById('stat-score').textContent = (result.score !== null && result.score !== undefined) ? result.score : '—';
+
+  // Competitive summary card — only show if present
+  const compCard = document.getElementById('competitive-card');
+  if (result.competitive_summary) {
+    document.getElementById('comp-summary-text').textContent = result.competitive_summary;
+    compCard.style.display = 'block';
+  } else {
+    compCard.style.display = 'none';
+  }
+
+  const recs = result.recommendations || [];
+
+  // Assign sequential numbers to each rec, ordered P1 → P2 → P3
+  const ordered = [];
+  ['P1', 'P2', 'P3'].forEach(level => {
+    recs.filter(r => r.priority === level).forEach(r => ordered.push(r));
+  });
+  ordered.forEach((r, i) => { r._num = i + 1; });
+
+  const p1Count = recs.filter(r => r.priority === 'P1').length;
+  const p2Count = recs.filter(r => r.priority === 'P2').length;
+  const p3Count = recs.filter(r => r.priority === 'P3').length;
+  document.getElementById('stat-p1').textContent = p1Count;
+  document.getElementById('stat-p2').textContent = p2Count;
+  document.getElementById('stat-p3').textContent = p3Count;
+
+  const container = document.getElementById('recs-container');
+  container.innerHTML = '';
+
+  ['P1', 'P2', 'P3'].forEach(level => {
+    const items = recs.filter(r => r.priority === level);
+    if (items.length === 0) return;
+    const labels = { P1: 'Critical — fix immediately', P2: 'High — schedule soon', P3: 'Medium — plan for next sprint' };
+    const section = document.createElement('div');
+    section.className = 'rec-section';
+    section.innerHTML = `<div class="rec-section-h"><span class="priority-tag ${level.toLowerCase()}">${level}</span>${labels[level]}</div>`;
+    items.forEach(r => {
+      const item = document.createElement('div');
+      item.className = `rec-item ${level.toLowerCase()}`;
+      item.id = `rec-${r._num}`;
+      const compBadge = r.competitive_source ? '<span class="comp-badge">vs competitor</span>' : '';
+      item.innerHTML = `
+        <div class="rec-row1">
+          <div class="rec-title"><span class="rec-num ${level.toLowerCase()}">${r._num}</span>${escape(r.title)} ${compBadge}</div>
+          <div class="rec-area">${escape(r.area || '')}</div>
+        </div>
+        <div class="rec-detail">${escape(r.detail || '')}</div>
+        <div class="rec-meta">
+          <span><strong>Why:</strong> ${escape(r.why_it_matters || '')}</span>
+          <span><strong>Effort:</strong> ${escape(r.effort || '')}</span>
+        </div>
+      `;
+      section.appendChild(item);
+    });
+    container.appendChild(section);
+  });
+
+  // Render visual annotations only if a screenshot was used
+  const visualCard = document.getElementById('visual-card');
+  if (imageDataUrl) {
+    renderVisualAnnotations(ordered);
+    visualCard.style.display = 'block';
+  } else {
+    visualCard.style.display = 'none';
+  }
+
+  document.getElementById('results').classList.add('active');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// State for approve-fixes
+let approvedSet = new Set(); // recommendation numbers that are approved
+let lastStructure = null; // stored structure result for the visual mockup tab
+
+function renderVisualAnnotations(orderedRecs) {
+  const list = document.getElementById('approve-list');
+  list.innerHTML = '';
+
+  // Default: all recs approved
+  approvedSet = new Set(orderedRecs.map(r => r._num));
+
+  // Standard region order — top of page to bottom
+  const regionOrder = ['Header', 'Hero', 'Buy Box', 'Right Sidebar', 'Below Fold', 'Footer'];
+  const regionGroups = {};
+  regionOrder.forEach(r => regionGroups[r] = []);
+
+  orderedRecs.forEach(r => {
+    const region = (r.region && regionOrder.includes(r.region)) ? r.region : 'Below Fold';
+    regionGroups[region].push(r);
+  });
+
+  regionOrder.forEach(region => {
+    const recs = regionGroups[region];
+    if (recs.length === 0) return;
+
+    const block = document.createElement('div');
+    const hasP1 = recs.some(r => r.priority === 'P1');
+    const hasP2 = recs.some(r => r.priority === 'P2');
+    block.className = 'approve-region-block ' + (hasP1 ? 'has-p1' : hasP2 ? 'has-p2' : 'has-p3');
+
+    let recsHtml = '';
+    recs.forEach(r => {
+      const lvl = (r.priority || 'P3').toLowerCase();
+      const compMark = r.competitive_source ? ' <span class="comp-badge">vs competitor</span>' : '';
+      recsHtml += `
+        <div class="approve-rec checked" data-num="${r._num}">
+          <div class="approve-checkbox"></div>
+          <div class="approve-rec-num ${lvl}">${r._num}</div>
+          <div class="approve-rec-body">
+            <div class="approve-rec-title">${escape(r.title)}${compMark}</div>
+            <div class="approve-rec-detail">${escape(r.detail || '')}</div>
+            <div class="approve-rec-meta"><strong>${escape(r.priority)}</strong> · ${escape(r.effort || '')}</div>
+          </div>
+        </div>`;
+    });
+
+    block.innerHTML = `
+      <div class="approve-region-header">
+        <span class="approve-region-name">${escape(region)}</span>
+        <span class="approve-region-count" data-region="${region}"><strong>${recs.length}</strong> of ${recs.length} selected</span>
+      </div>
+      <div class="approve-region-recs">${recsHtml}</div>
+    `;
+
+    list.appendChild(block);
+  });
+
+  // Wire checkbox toggling
+  list.querySelectorAll('.approve-rec').forEach(el => {
+    el.addEventListener('click', () => {
+      const num = parseInt(el.dataset.num);
+      if (approvedSet.has(num)) {
+        approvedSet.delete(num);
+        el.classList.remove('checked');
+        el.classList.add('unchecked');
+      } else {
+        approvedSet.add(num);
+        el.classList.add('checked');
+        el.classList.remove('unchecked');
+      }
+      updateApprovedCounts();
+    });
+  });
+
+  updateApprovedCounts();
+}
+
+function updateApprovedCounts() {
+  document.getElementById('approved-count').textContent = approvedSet.size;
+  document.getElementById('total-count').textContent = (lastResults?.recommendations || []).length;
+
+  // Update per-region counters
+  document.querySelectorAll('.approve-region-block').forEach(block => {
+    const recs = block.querySelectorAll('.approve-rec');
+    let approved = 0;
+    recs.forEach(r => {
+      if (approvedSet.has(parseInt(r.dataset.num))) approved++;
+    });
+    const counter = block.querySelector('.approve-region-count');
+    if (counter) {
+      counter.innerHTML = `<strong>${approved}</strong> of ${recs.length} selected`;
+    }
+  });
+}
+
+function checkAll(state) {
+  document.querySelectorAll('.approve-rec').forEach(el => {
+    const num = parseInt(el.dataset.num);
+    if (state) {
+      approvedSet.add(num);
+      el.classList.add('checked');
+      el.classList.remove('unchecked');
+    } else {
+      approvedSet.delete(num);
+      el.classList.remove('checked');
+      el.classList.add('unchecked');
+    }
+  });
+  updateApprovedCounts();
+}
+
+// Get the approved recommendations in order, with numbers preserved
+function getApprovedOrdered() {
+  if (!lastResults || !lastResults.recommendations) return [];
+  const recs = lastResults.recommendations;
+  const ordered = [];
+  ['P1', 'P2', 'P3'].forEach(level => {
+    recs.filter(r => r.priority === level).forEach(r => ordered.push(r));
+  });
+  ordered.forEach((r, i) => { r._num = i + 1; });
+  return ordered.filter(r => approvedSet.has(r._num));
+}
+
+
+async function showStructure() {
+  const btn = document.getElementById('show-structure-btn');
+  const output = document.getElementById('structure-output');
+  const origHtml = btn.innerHTML;
+
+  const approved = getApprovedOrdered();
+  if (approved.length === 0) {
+    alert('No fixes selected. Check at least one to generate a structural mockup.');
+    return;
+  }
+
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    alert('Add your API key in Settings first.');
+    openSettings();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg> Generating structure...';
+
+  output.style.display = 'block';
+  output.innerHTML = '<div class="structure-loading">Generating structural mockups based on your approved fixes... this takes ~20 seconds.</div>';
+  output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Group approved by region
+  const regionOrder = ['Header', 'Hero', 'Buy Box', 'Right Sidebar', 'Below Fold', 'Footer'];
+  const regionGroups = {};
+  regionOrder.forEach(r => regionGroups[r] = []);
+  approved.forEach(r => {
+    const region = (r.region && regionOrder.includes(r.region)) ? r.region : 'Below Fold';
+    regionGroups[region].push(r);
+  });
+
+  // Build the prompt
+  const fixesByRegion = regionOrder
+    .filter(region => regionGroups[region].length > 0)
+    .map(region => {
+      const items = regionGroups[region].map((r, i) =>
+        `  ${i+1}. [${r.priority}] ${r.title} — ${r.detail}`
+      ).join('\n');
+      return `${region}:\n${items}`;
+    }).join('\n\n');
+
+  const userPrompt = `Based on this product page screenshot and the approved fixes below, generate a structural mockup for each affected region. Show the new structure as ordered blocks with labels — not pixel-perfect design, just the layout/structure of what should be on the page.
+
+For each region, output:
+- A list of structural blocks in top-to-bottom order
+- Each block tagged as "new" (added by a fix), "changed" (modified by a fix), or "kept" (existing element preserved)
+- A short label for each block (e.g., "Product title", "Price + savings line", "Bulk pricing teaser")
+- A 1-line detail describing what goes in that block
+
+APPROVED FIXES:
+
+${fixesByRegion}
+
+Return ONLY raw JSON in this format, no markdown fences or other text:
+
+{
+  "regions": [
+    {
+      "name": "Buy Box",
+      "blocks": [
+        { "tag": "kept", "label": "Brand link", "detail": "Ergodyne (clickable)" },
+        { "tag": "new", "label": "Authorized Distributor badge", "detail": "Green badge next to brand name — eliminates gray-market concern" },
+        { "tag": "kept", "label": "Product title", "detail": "Full SKU title" },
+        { "tag": "changed", "label": "Price block", "detail": "Add MSRP strikethrough + green 'Save $32 vs distributors' line" }
+      ],
+      "summary": "1-2 sentences explaining the overall change to this region"
+    }
+  ]
+}
+
+Include only regions where there are approved fixes. Be concrete — name actual elements that go on the page (not abstractions like "trust signal" but "Authorized Distributor badge"). Order blocks top-to-bottom as they should appear.`;
+
+  try {
+    const userContent = [
+      {
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: imageType,
+          data: imageData
+        }
+      },
+      { type: 'text', text: userPrompt }
+    ];
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: userContent }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const text = data.content.map(c => c.text || '').join('').trim();
+    const cleaned = text.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
+
+    let result;
+    try {
+      result = JSON.parse(cleaned);
+    } catch (e) {
+      throw new Error('Could not parse mockup response. Try again.');
+    }
+
+    lastStructure = result;
+    document.getElementById('copy-lovable-btn').disabled = false;
+    renderStructure(result);
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Regenerate';
+    btn.disabled = false;
+
+  } catch (e) {
+    output.innerHTML = `<div class="structure-loading" style="color: var(--red);">Failed: ${escape(e.message)}</div>`;
+    btn.innerHTML = origHtml;
+    btn.disabled = false;
+  }
+}
+
+function renderStructure(result) {
+  const output = document.getElementById('structure-output');
+  const regions = result.regions || [];
+
+  if (regions.length === 0) {
+    output.innerHTML = '<div class="structure-loading">No regions returned. Try selecting different fixes.</div>';
+    return;
+  }
+
+  let html = `
+    <div class="structure-legend">
+      <div class="structure-legend-item"><span class="legend-dot new"></span>NEW — added by a fix</div>
+      <div class="structure-legend-item"><span class="legend-dot changed"></span>CHANGED — modified by a fix</div>
+      <div class="structure-legend-item"><span class="legend-dot kept"></span>KEPT — existing element</div>
+    </div>
+  `;
+
+  regions.forEach(region => {
+    const blocks = region.blocks || [];
+    const newCount = blocks.filter(b => b.tag === 'new').length;
+    const changedCount = blocks.filter(b => b.tag === 'changed').length;
+
+    html += `
+      <div class="structure-region">
+        <div class="structure-region-header">
+          <span class="structure-region-name">${escape(region.name)}</span>
+          <span class="structure-region-count">${newCount} new · ${changedCount} changed</span>
+        </div>
+        <div class="structure-region-body">
+          ${region.summary ? `<div style="font-size: 13px; color: var(--steel-700); margin-bottom: 14px; line-height: 1.55;">${escape(region.summary)}</div>` : ''}
+          <div class="structure-mockup">
+            ${blocks.map(b => `
+              <div class="structure-mockup-block ${escape(b.tag || 'kept')}">
+                <span class="block-tag ${escape(b.tag || 'kept')}">${escape((b.tag || 'kept').toUpperCase())}</span>
+                <span class="block-label">${escape(b.label || '')}</span>
+                ${b.detail ? `<span class="block-detail">${escape(b.detail)}</span>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  output.innerHTML = html;
+}
+
+// Copy a clean spec for pasting into Lovable, v0, Bolt, or any other design tool
+function copyForLovable() {
+  if (!lastStructure) {
+    alert('Generate the structure first, then copy the spec.');
+    return;
+  }
+
+  const regions = lastStructure.regions || [];
+  if (regions.length === 0) {
+    alert('No structure to copy.');
+    return;
+  }
+
+  let text = 'PRODUCT PAGE REDESIGN SPEC\n';
+  text += '='.repeat(50) + '\n\n';
+  text += 'Redesign the following sections of a product page based on this spec. Use a clean, professional, modern e-commerce aesthetic. Treat NEW blocks as additions, CHANGED blocks as modifications, and KEPT blocks as existing elements that should remain in place.\n\n';
+
+  regions.forEach(region => {
+    text += `## ${region.name.toUpperCase()}\n`;
+    if (region.summary) text += `${region.summary}\n`;
+    text += '\n';
+
+    const blocks = region.blocks || [];
+    blocks.forEach((b, i) => {
+      const tag = (b.tag || 'kept').toUpperCase();
+      text += `${i + 1}. [${tag}] ${b.label || ''}\n`;
+      if (b.detail) text += `   ${b.detail}\n`;
+    });
+    text += '\n';
+  });
+
+  text += '---\n';
+  text += 'Generated by Modonix CRO Auditor. Paste this spec into Lovable, v0, Bolt, or any AI design tool along with a screenshot of the original page to generate a polished mockup.\n';
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-lovable-btn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Spec Copied — Paste in Lovable / v0';
+    setTimeout(() => btn.innerHTML = orig, 3500);
+  }).catch(() => {
+    alert('Could not copy to clipboard. Try selecting the structure manually.');
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+function escape(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+// ========================================
+// Export actions
+// ========================================
+function copyResults() {
+  if (!lastResults) {
+    alert('No audit results to copy yet.');
+    return;
+  }
+  let text = `MODONIX CRO AUDIT\n${'='.repeat(40)}\n\n`;
+  text += `CRO SCORE: ${lastResults.score ?? '—'}\n\n`;
+  text += `${lastResults.headline}\n\n${lastResults.summary}\n\n`;
+  if (lastResults.competitive_summary) {
+    text += `COMPETITIVE READ\n${'-'.repeat(40)}\n${lastResults.competitive_summary}\n\n`;
+  }
+  text += `RECOMMENDATIONS\n${'-'.repeat(40)}\n\n`;
+  ['P1','P2','P3'].forEach(level => {
+    const items = (lastResults.recommendations || []).filter(r => r.priority === level);
+    if (!items.length) return;
+    items.forEach((r) => {
+      const compMark = r.competitive_source ? ' [vs competitor]' : '';
+      text += `[${level}] ${r.area} — ${r.title}${compMark}\n`;
+      text += `${r.detail}\n`;
+      text += `Why: ${r.why_it_matters}\n`;
+      text += `Effort: ${r.effort}\n\n`;
+    });
+  });
+
+  // Find the actual button by id rather than relying on event.target
+  const btn = document.querySelector('.actions-row .action-btn.primary');
+
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      setTimeout(() => btn.innerHTML = orig, 2000);
+    }
+  }).catch(err => {
+    // Fallback: legacy execCommand
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+        setTimeout(() => btn.innerHTML = orig, 2000);
+      }
+    } catch (e) {
+      alert('Copy failed. Use the Download JSON option instead.');
+    }
+  });
+}
+
+function downloadJSON() {
+  if (!lastResults) {
+    alert('No audit results to download yet.');
+    return;
+  }
+  try {
+    const blob = new Blob([JSON.stringify(lastResults, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cro-audit-${Date.now()}.json`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (e) {
+    alert('Download failed: ' + e.message);
+  }
+}
+
+function resetAndStartOver() {
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('url-input').value = '';
+  document.getElementById('html-input').value = '';
+  document.getElementById('ctx-category').value = '';
+  document.getElementById('ctx-buyer').value = '';
+  document.getElementById('comp-url-1').value = '';
+  document.getElementById('comp-url-2').value = '';
+  document.getElementById('comp-url-3').value = '';
+  updateCompetitorCount();
+  imageData = null;
+  imageType = null;
+  imageDataUrl = null;
+  document.getElementById('preview').style.display = 'none';
+  document.getElementById('preview-info').style.display = 'none';
+  dropzone.classList.remove('has-file');
+  document.querySelector('#dropzone svg').style.display = 'block';
+  document.querySelector('#dropzone .dropzone-title').style.display = 'block';
+  document.querySelector('#dropzone .dropzone-subtitle').style.display = 'block';
+  hideStatus();
+  updateRunButton();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// First-load: prompt for API key if not set
+if (!getApiKey()) {
+  setTimeout(() => openSettings(), 600);
+}
+updateRunButton();
+</script>
+
+</body>
+</html>
