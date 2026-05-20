@@ -1151,6 +1151,14 @@ footer.modonix-footer strong { color: var(--ink); }
         <label class="label">Primary buyer (optional)</label>
         <input type="text" class="text-input" id="ctx-buyer" placeholder="e.g., procurement manager, fitness enthusiast, dev team lead">
       </div>
+      <div class="field">
+        <label class="label">Your name / sign-off (optional)</label>
+        <input type="text" class="text-input" id="ctx-sender" placeholder="e.g., Ahmed, Modonix">
+      </div>
+      <div class="field">
+        <label class="label">Call-to-action link (optional)</label>
+        <input type="text" class="text-input" id="ctx-cta" placeholder="e.g., your Modonix booking or contact link">
+      </div>
     </div>
 
     <!-- Competitors (optional) -->
@@ -1276,6 +1284,61 @@ footer.modonix-footer strong { color: var(--ink); }
       </div>
 
       <div id="structure-output" class="structure-output" style="display: none;"></div>
+    </div>
+
+    <!-- Discuss this audit -->
+    <div class="result-card" id="discuss-card">
+      <div class="result-label">Discuss This Audit</div>
+      <h3>Push back, ask questions, refine the findings</h3>
+      <p class="visual-help">Before you act on a recommendation, talk to the audit. Explain context the AI doesn't have, challenge a finding, or ask why it suggested something. When you push back with a good reason, recommendations on the page above can be updated, removed, or added. The AI sees the full audit; you just type.</p>
+      <div class="visual-actions" style="margin-top:0;margin-bottom:14px">
+        <button class="action-btn primary" onclick="startDiscussion()" id="start-discuss-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Start Discussion
+        </button>
+      </div>
+      <div id="discuss-output" style="display:none;">
+        <div id="discuss-transcript" style="background:var(--soft);border:1px solid var(--steel-100);border-radius:6px;padding:14px;margin-bottom:12px;max-height:480px;overflow-y:auto;"></div>
+        <div id="discuss-thinking" style="display:none;font-size:12px;color:var(--steel-500);font-style:italic;margin-bottom:8px;">Thinking...</div>
+        <div style="display:flex;gap:8px;align-items:stretch;">
+          <input type="text" class="text-input" id="discuss-input" placeholder="Type your message... (e.g., 'The cart is intentional, I'm testing a few products I made')" style="flex:1;" onkeydown="if(event.key==='Enter')sendDiscussMessage()">
+          <button class="action-btn primary" onclick="sendDiscussMessage()" id="discuss-send-btn" style="white-space:nowrap;">
+            Send
+          </button>
+        </div>
+        <div class="helper" style="margin-top:8px;">When the AI agrees a recommendation should change, the list above updates automatically. You can keep talking as long as you want.</div>
+      </div>
+    </div>
+
+    <!-- Outreach Email -->
+    <div class="result-card" id="email-card">
+      <div class="result-label">Outreach Email</div>
+      <h3>Draft a short email to the prospect</h3>
+      <p class="visual-help">Turns this audit into a brief, helpful outreach email - useful first, soft close. Give feedback below to revise it as many times as you want, then copy it into Outlook.</p>
+      <div class="visual-actions" style="margin-top:0;margin-bottom:16px">
+        <button class="action-btn primary" onclick="draftEmail()" id="draft-email-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Draft Outreach Email
+        </button>
+      </div>
+      <div id="email-output" style="display:none;">
+        <textarea class="textarea" id="email-text" style="min-height:280px;font-family:var(--body);font-size:14px;line-height:1.6;"></textarea>
+        <div style="margin-top:14px;">
+          <label class="label">Want changes? Tell it what to fix</label>
+          <input type="text" class="text-input" id="email-feedback" placeholder="e.g., shorter, less salesy, lead with the mobile issue, warmer tone" onkeydown="if(event.key==='Enter')reviseEmail()">
+          <div class="helper">Press Enter or click Revise. You can do this as many times as you want.</div>
+        </div>
+        <div class="visual-actions" style="margin-top:14px;">
+          <button class="action-btn primary" onclick="reviseEmail()" id="revise-email-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
+            Revise
+          </button>
+          <button class="action-btn" onclick="copyEmail()" id="copy-email-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Email
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Action footer -->
@@ -2220,6 +2283,361 @@ function escape(s) {
 }
 
 // ========================================
+// Outreach Email - draft + conversational revise
+// ========================================
+let emailConversation = []; // running message history for the revise loop
+
+function buildAuditContext() {
+  if (!lastResults) return '';
+  let ctx = `CRO SCORE: ${lastResults.score ?? 'n/a'}\n`;
+  ctx += `HEADLINE: ${lastResults.headline || ''}\n`;
+  ctx += `SUMMARY: ${lastResults.summary || ''}\n`;
+  if (lastResults.competitive_summary) {
+    ctx += `COMPETITIVE READ: ${lastResults.competitive_summary}\n`;
+  }
+  ctx += `\nTOP FINDINGS:\n`;
+  ['P1','P2','P3'].forEach(level => {
+    (lastResults.recommendations || [])
+      .filter(r => r.priority === level)
+      .forEach(r => {
+        ctx += `- [${level}] ${r.title}: ${r.detail}`;
+        if (r.competitive_source) ctx += ' (competitive gap)';
+        ctx += '\n';
+      });
+  });
+  return ctx;
+}
+
+const EMAIL_SYSTEM_PROMPT = `You write short, warm outreach emails for Modonix, a digital commerce consulting firm. The recipient is a small business owner - busy, not technical, runs a real business. They will read this on a phone.
+
+Hard rules:
+- The email BODY is 75 to 110 words. Never longer. Count words and stay in range.
+- Lead with one specific observation that proves you actually looked at THEIR page, not generic flattery.
+- State the single biggest issue in plain language, and what it is costing them (lost sales, buyers bouncing). No jargon. Do not say "CRO" or "conversion rate optimization".
+- If the audit included a competitive read, you may add ONE sharp sentence about where they stand vs a competitor. Only if it is strong. Skip it otherwise.
+- One soft close: the full audit found more, and a single clear call to action with the provided link. Do not be pushy. Helpful first.
+- Plain, human tone. No corporate filler. No em dashes. Short sentences.
+- Output a subject line, then a blank line, then the body. Nothing else - no preamble, no notes, no markdown.`;
+
+async function draftEmail() {
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Add your API key in Settings first.'); openSettings(); return; }
+  if (!lastResults) { alert('Run an audit first.'); return; }
+
+  const btn = document.getElementById('draft-email-btn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg> Drafting...';
+
+  const sender = document.getElementById('ctx-sender').value.trim();
+  const cta = document.getElementById('ctx-cta').value.trim();
+  const category = document.getElementById('ctx-category').value.trim();
+
+  let firstMsg = `Write the outreach email based on this audit.\n\n${buildAuditContext()}\n\n`;
+  firstMsg += sender ? `Sign off as: ${sender}\n` : `Sign off as: the Modonix team\n`;
+  firstMsg += cta ? `Call-to-action link to include: ${cta}\n` : `Call-to-action: invite them to reply to this email for the full audit\n`;
+  if (category) firstMsg += `Their business: ${category}\n`;
+
+  emailConversation = [{ role: 'user', content: firstMsg }];
+
+  try {
+    const text = await callEmailApi(apiKey);
+    emailConversation.push({ role: 'assistant', content: text });
+    document.getElementById('email-text').value = text;
+    document.getElementById('email-output').style.display = 'block';
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Redraft from scratch';
+  } catch (e) {
+    alert('Draft failed: ' + e.message);
+    btn.innerHTML = orig;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function reviseEmail() {
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Add your API key in Settings first.'); openSettings(); return; }
+  const feedback = document.getElementById('email-feedback').value.trim();
+  if (!feedback) { alert('Type what you want changed first.'); return; }
+  if (emailConversation.length === 0) { alert('Draft an email first.'); return; }
+
+  const btn = document.getElementById('revise-email-btn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg> Revising...';
+
+  // If the user hand-edited the textarea, use that as the current draft
+  const current = document.getElementById('email-text').value.trim();
+  if (current && emailConversation.length) {
+    emailConversation[emailConversation.length - 1] = { role: 'assistant', content: current };
+  }
+  emailConversation.push({ role: 'user', content: `Revise the email: ${feedback}\n\nKeep the 75-110 word limit. Output subject line, blank line, then body. Nothing else.` });
+
+  try {
+    const text = await callEmailApi(apiKey);
+    emailConversation.push({ role: 'assistant', content: text });
+    document.getElementById('email-text').value = text;
+    document.getElementById('email-feedback').value = '';
+  } catch (e) {
+    alert('Revise failed: ' + e.message);
+    emailConversation.pop(); // drop the failed user turn
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+async function callEmailApi(apiKey) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: EMAIL_SYSTEM_PROMPT,
+      messages: emailConversation
+    })
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error: ${response.status}`);
+  }
+  const data = await response.json();
+  return data.content.map(c => c.text || '').join('').trim();
+}
+
+function copyEmail() {
+  const text = document.getElementById('email-text').value;
+  if (!text.trim()) { alert('Nothing to copy yet.'); return; }
+  const btn = document.getElementById('copy-email-btn');
+  navigator.clipboard.writeText(text).then(() => {
+    const o = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(() => btn.innerHTML = o, 2000);
+  }).catch(() => {
+    const ta = document.getElementById('email-text');
+    ta.select();
+    document.execCommand('copy');
+  });
+}
+
+// ========================================
+// Discuss This Audit - chat that can update the on-page recommendations
+// ========================================
+let discussConversation = []; // running message history
+
+const DISCUSS_SYSTEM_PROMPT = `You are the same senior conversion consultant who produced the audit the user is looking at. Now you are talking with the user about that audit.
+
+Your job in this conversation:
+- Answer questions about your recommendations - why you flagged something, what evidence pointed to it, what the tradeoff is.
+- Take new context seriously. The user knows their business better than you do. If they tell you something that genuinely changes whether a recommendation applies, update your view.
+- Push back honestly when you still think your recommendation stands. Do not cave just because the user disagrees. Explain your reasoning.
+- Be direct, blunt, plain. No corporate filler. No em dashes. Short paragraphs. The user wants a real conversation, not a wall of polished text.
+
+When the user gives you context that should change a recommendation, you can do one of three things:
+- REMOVE a recommendation (the user explained why it does not apply, and you agree)
+- UPDATE a recommendation (the title, detail, priority, or why_it_matters should change based on the new context)
+- ADD a new recommendation (the conversation revealed a real issue you missed)
+
+To make a change, end your reply with a JSON action block in this EXACT format, on its own line. Plain text reply first, then a blank line, then the block. Do not wrap it in code fences.
+
+ACTIONS:
+{"changes": [
+  {"action": "remove", "rec_number": 3, "reason": "User confirmed the cart is for a few test products, not a real storefront, so the e-commerce recommendation does not apply"},
+  {"action": "update", "rec_number": 5, "new_title": "...", "new_detail": "...", "new_priority": "P2", "new_why_it_matters": "...", "reason": "Rewrote based on the new context"},
+  {"action": "add", "new_rec": {"priority": "P2", "area": "Buy Box", "title": "...", "detail": "...", "why_it_matters": "...", "effort": "1-2 hrs", "region": "Buy Box"}, "reason": "User revealed they offer custom work which was not visible on the page"}
+]}
+
+If no recommendations need changing, OMIT the ACTIONS block entirely. Just reply normally.
+
+rec_number refers to the numbered list on the page (1, 2, 3, etc), top to bottom across P1, P2, P3.
+
+Be conservative: only change a recommendation when the user gave you real context that materially changes whether it applies. Do not change things just to please the user.`;
+
+function appendDiscussMessage(role, text) {
+  const transcript = document.getElementById('discuss-transcript');
+  const bubble = document.createElement('div');
+  bubble.style.cssText = 'margin-bottom:14px;padding:10px 14px;border-radius:8px;font-size:13.5px;line-height:1.6;' +
+    (role === 'user'
+      ? 'background:var(--lime-tint);border:1px solid var(--lime-deep);margin-left:40px;'
+      : 'background:var(--paper);border:1px solid var(--steel-100);margin-right:40px;');
+  const label = document.createElement('div');
+  label.style.cssText = 'font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:' +
+    (role === 'user' ? 'var(--green)' : 'var(--steel-500)') + ';margin-bottom:6px;';
+  label.textContent = role === 'user' ? 'You' : 'Audit AI';
+  bubble.appendChild(label);
+  const body = document.createElement('div');
+  body.textContent = text;
+  body.style.cssText = 'white-space:pre-wrap;color:var(--ink);';
+  bubble.appendChild(body);
+  transcript.appendChild(bubble);
+  transcript.scrollTop = transcript.scrollHeight;
+}
+
+function buildDiscussContext() {
+  if (!lastResults) return '';
+  let ctx = `Here is the audit you produced, which the user is looking at right now:\n\n`;
+  ctx += `CRO SCORE: ${lastResults.score ?? 'n/a'}\n`;
+  ctx += `HEADLINE: ${lastResults.headline || ''}\n`;
+  ctx += `SUMMARY: ${lastResults.summary || ''}\n`;
+  if (lastResults.competitive_summary) {
+    ctx += `COMPETITIVE READ: ${lastResults.competitive_summary}\n`;
+  }
+  ctx += `\nRECOMMENDATIONS (numbered as shown to the user):\n`;
+  const recs = lastResults.recommendations || [];
+  const ordered = [];
+  ['P1','P2','P3'].forEach(level => {
+    recs.filter(r => r.priority === level).forEach(r => ordered.push(r));
+  });
+  ordered.forEach((r, i) => {
+    ctx += `\n${i+1}. [${r.priority}] ${r.area} - ${r.title}\n`;
+    ctx += `   Detail: ${r.detail}\n`;
+    ctx += `   Why it matters: ${r.why_it_matters}\n`;
+    ctx += `   Effort: ${r.effort}\n`;
+  });
+  return ctx;
+}
+
+function startDiscussion() {
+  if (!lastResults) { alert('Run an audit first.'); return; }
+  document.getElementById('discuss-output').style.display = 'block';
+  document.getElementById('start-discuss-btn').innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Discussion active';
+  document.getElementById('start-discuss-btn').disabled = true;
+  if (discussConversation.length === 0) {
+    const intro = "Audit is in front of you. Tell me what to look at again, what you disagree with, or what context I'm missing. I'll update recommendations on the page when something genuinely changes.";
+    appendDiscussMessage('assistant', intro);
+  }
+  setTimeout(() => document.getElementById('discuss-input').focus(), 100);
+}
+
+async function sendDiscussMessage() {
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Add your API key in Settings first.'); openSettings(); return; }
+  const input = document.getElementById('discuss-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  appendDiscussMessage('user', msg);
+  input.value = '';
+  document.getElementById('discuss-send-btn').disabled = true;
+  document.getElementById('discuss-thinking').style.display = 'block';
+
+  // First user turn: prepend the audit context so the AI has it
+  let toSend;
+  if (discussConversation.length === 0) {
+    toSend = buildDiscussContext() + '\n\nUSER MESSAGE: ' + msg;
+  } else {
+    toSend = msg;
+  }
+  discussConversation.push({ role: 'user', content: toSend });
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        system: DISCUSS_SYSTEM_PROMPT,
+        messages: discussConversation
+      })
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error: ${response.status}`);
+    }
+    const data = await response.json();
+    const fullText = data.content.map(c => c.text || '').join('').trim();
+    discussConversation.push({ role: 'assistant', content: fullText });
+
+    // Split the reply: prose + optional ACTIONS block
+    const actionsMatch = fullText.match(/ACTIONS:\s*(\{[\s\S]*\})\s*$/);
+    let proseText = fullText;
+    let actionsBlock = null;
+    if (actionsMatch) {
+      proseText = fullText.slice(0, actionsMatch.index).trim();
+      try {
+        actionsBlock = JSON.parse(actionsMatch[1]);
+      } catch (e) {
+        // bad JSON - just show whole reply as prose
+        proseText = fullText;
+        actionsBlock = null;
+      }
+    }
+    appendDiscussMessage('assistant', proseText);
+
+    if (actionsBlock && Array.isArray(actionsBlock.changes) && actionsBlock.changes.length > 0) {
+      applyChanges(actionsBlock.changes);
+    }
+  } catch (e) {
+    appendDiscussMessage('assistant', '(Error: ' + e.message + ')');
+    discussConversation.pop();
+  } finally {
+    document.getElementById('discuss-send-btn').disabled = false;
+    document.getElementById('discuss-thinking').style.display = 'none';
+    document.getElementById('discuss-input').focus();
+  }
+}
+
+function applyChanges(changes) {
+  if (!lastResults || !lastResults.recommendations) return;
+  const recs = lastResults.recommendations;
+  // Reorder recs into the same P1->P2->P3 sequence the user sees, so rec_number matches
+  const ordered = [];
+  ['P1','P2','P3'].forEach(level => {
+    recs.filter(r => r.priority === level).forEach(r => ordered.push(r));
+  });
+  const toRemove = new Set();
+  const summary = [];
+
+  changes.forEach(ch => {
+    if (ch.action === 'remove' && ch.rec_number) {
+      const target = ordered[ch.rec_number - 1];
+      if (target) {
+        toRemove.add(target);
+        summary.push('Removed #' + ch.rec_number + ': ' + (target.title || ''));
+      }
+    } else if (ch.action === 'update' && ch.rec_number) {
+      const target = ordered[ch.rec_number - 1];
+      if (target) {
+        if (ch.new_title) target.title = ch.new_title;
+        if (ch.new_detail) target.detail = ch.new_detail;
+        if (ch.new_priority) target.priority = ch.new_priority;
+        if (ch.new_why_it_matters) target.why_it_matters = ch.new_why_it_matters;
+        summary.push('Updated #' + ch.rec_number + ': ' + (target.title || ''));
+      }
+    } else if (ch.action === 'add' && ch.new_rec) {
+      recs.push(ch.new_rec);
+      summary.push('Added: ' + (ch.new_rec.title || ''));
+    }
+  });
+
+  if (toRemove.size > 0) {
+    lastResults.recommendations = recs.filter(r => !toRemove.has(r));
+  }
+
+  if (summary.length > 0) {
+    appendDiscussMessage('assistant', '[Changes applied to the audit above]\n' + summary.join('\n'));
+    renderResults(lastResults);
+    // Scroll back to the discuss card so the user can keep talking
+    setTimeout(() => {
+      document.getElementById('discuss-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 200);
+  }
+}
+
+// ========================================
 // Export actions
 // ========================================
 function copyResults() {
@@ -2300,6 +2718,18 @@ function downloadJSON() {
 
 function resetAndStartOver() {
   document.getElementById('results').classList.remove('active');
+  emailConversation = [];
+  document.getElementById('email-output').style.display = 'none';
+  const ds = document.getElementById('ctx-sender'); if (ds) ds.value = '';
+  const dc = document.getElementById('ctx-cta'); if (dc) dc.value = '';
+  discussConversation = [];
+  const dt = document.getElementById('discuss-transcript'); if (dt) dt.innerHTML = '';
+  const dout = document.getElementById('discuss-output'); if (dout) dout.style.display = 'none';
+  const dbtn = document.getElementById('start-discuss-btn');
+  if (dbtn) {
+    dbtn.disabled = false;
+    dbtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Start Discussion';
+  }
   document.getElementById('url-input').value = '';
   document.getElementById('html-input').value = '';
   document.getElementById('ctx-category').value = '';
