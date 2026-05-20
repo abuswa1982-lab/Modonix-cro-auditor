@@ -1193,10 +1193,16 @@ footer.modonix-footer strong { color: var(--ink); }
     <!-- Run -->
     <div class="run-btn-row">
       <span class="run-cost">Powered by Claude Sonnet 4 · ~$0.05–$0.10 per audit</span>
-      <button class="run-btn" id="run-btn" onclick="runAudit()" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        Run Audit
-      </button>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="action-btn" id="clear-btn" onclick="clearAll()" style="padding:14px 20px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Clear
+        </button>
+        <button class="run-btn" id="run-btn" onclick="runAudit()" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Run Audit
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2714,6 +2720,43 @@ function downloadJSON() {
   } catch (e) {
     alert('Download failed: ' + e.message);
   }
+}
+
+function clearAll() {
+  // Same as Run Another, but stays put instead of scrolling to top.
+  // Wipes inputs, results, email draft, discussion, and the screenshot preview.
+  document.getElementById('results').classList.remove('active');
+  emailConversation = [];
+  document.getElementById('email-output').style.display = 'none';
+  const ds = document.getElementById('ctx-sender'); if (ds) ds.value = '';
+  const dc = document.getElementById('ctx-cta'); if (dc) dc.value = '';
+  discussConversation = [];
+  const dt = document.getElementById('discuss-transcript'); if (dt) dt.innerHTML = '';
+  const dout = document.getElementById('discuss-output'); if (dout) dout.style.display = 'none';
+  const dbtn = document.getElementById('start-discuss-btn');
+  if (dbtn) {
+    dbtn.disabled = false;
+    dbtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Start Discussion';
+  }
+  document.getElementById('url-input').value = '';
+  document.getElementById('html-input').value = '';
+  document.getElementById('ctx-category').value = '';
+  document.getElementById('ctx-buyer').value = '';
+  document.getElementById('comp-url-1').value = '';
+  document.getElementById('comp-url-2').value = '';
+  document.getElementById('comp-url-3').value = '';
+  updateCompetitorCount();
+  imageData = null;
+  imageType = null;
+  imageDataUrl = null;
+  document.getElementById('preview').style.display = 'none';
+  document.getElementById('preview-info').style.display = 'none';
+  dropzone.classList.remove('has-file');
+  document.querySelector('#dropzone svg').style.display = 'block';
+  document.querySelector('#dropzone .dropzone-title').style.display = 'block';
+  document.querySelector('#dropzone .dropzone-subtitle').style.display = 'block';
+  hideStatus();
+  updateRunButton();
 }
 
 function resetAndStartOver() {
