@@ -1125,7 +1125,7 @@ footer.modonix-footer strong { color: var(--ink); }
     <div class="input-pane" id="pane-html">
       <label class="label">Page HTML or visible text</label>
       <textarea class="textarea" id="html-input" placeholder="Paste the full page HTML, or just the visible text content of the product page..."></textarea>
-      <div class="helper">Right-click the page → View Page Source → Select All → Copy. Or just copy the visible text from the page if HTML is too messy.</div>
+      <div class="helper">Easiest: select all visible text on the page (Ctrl+A then Ctrl+C on the rendered page) and paste here. Raw HTML source also works - the tool will clean it before sending.</div>
     </div>
 
     <!-- Image pane -->
@@ -1734,13 +1734,20 @@ ${pageContent.substring(0, 80000)}
 Return JSON only.`
     }];
   } else if (activeTab === 'html') {
-    const html = document.getElementById('html-input').value.trim();
+    let html = document.getElementById('html-input').value.trim();
+    // If the paste looks like raw HTML source (lots of tags), clean it down
+    // to readable text the way the URL fallback does. Otherwise leave it alone.
+    const looksLikeHtml = /<\/?(html|body|head|div|span|script|style|main|header|footer|section|nav|article)\b/i.test(html);
+    let pageContent = html;
+    if (looksLikeHtml) {
+      pageContent = stripHtml(html);
+    }
     userContent = [{
       type: 'text',
       text: `Audit this product page based on its HTML/text content.${contextNote}
 
-Page content:
-${html.substring(0, 50000)}
+Page content${looksLikeHtml ? ' (cleaned from pasted HTML source)' : ''}:
+${pageContent.substring(0, 80000)}
 
 Return JSON only.`
     }];
@@ -2751,6 +2758,8 @@ function clearAll() {
   imageDataUrl = null;
   document.getElementById('preview').style.display = 'none';
   document.getElementById('preview-info').style.display = 'none';
+  // Reset the file input value - without this, re-selecting the same file does nothing
+  const fi = document.getElementById('image-input'); if (fi) fi.value = '';
   dropzone.classList.remove('has-file');
   document.querySelector('#dropzone svg').style.display = 'block';
   document.querySelector('#dropzone .dropzone-title').style.display = 'block';
@@ -2786,6 +2795,7 @@ function resetAndStartOver() {
   imageDataUrl = null;
   document.getElementById('preview').style.display = 'none';
   document.getElementById('preview-info').style.display = 'none';
+  const fi2 = document.getElementById('image-input'); if (fi2) fi2.value = '';
   dropzone.classList.remove('has-file');
   document.querySelector('#dropzone svg').style.display = 'block';
   document.querySelector('#dropzone .dropzone-title').style.display = 'block';
